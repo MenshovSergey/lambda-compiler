@@ -1,23 +1,20 @@
 (* dummy parser *)
-(*let rec parse = parser
-  | [< lhs = parse_summand; 'Token.Plus; rhs = parse_summand >] -> Ast.Plus (lhs, rhs)
-  | [< >] -> Ast.Number 0
 
+let rec parse_expr = parser
+  | [< lhs = parse_summand; stream >] ->
+    (parser
+      | [< 'Token.Plus; rhs = parse_expr >] -> Ast.Plus(lhs, rhs)
+      | [< 'Token.Minus; rhs = parse_expr >] -> Ast.Minus(lhs, rhs)
+      | [< >] -> lhs) stream
 
 and parse_summand = parser
-  | [< lhs = parse_multiplier; 'Token.Mul; rhs = parse_multiplier >] -> Ast.Plus (lhs, rhs)
-  | [< >] -> Ast.Number 1
+  | [< lhs = parse_multiplier; stream >] ->
+    (parser
+      | [< 'Token.Mul; rhs = parse_summand >] -> Ast.Mul(lhs, rhs)
+      | [< 'Token.Div; rhs = parse_summand >] -> Ast.Div(lhs, rhs)
+      | [< 'Token.Mod; rhs = parse_summand >] -> Ast.Mod(lhs, rhs)
+      | [< >] -> lhs) stream
 
 and parse_multiplier = parser
-  | [< 'Token.Number x >] -> Ast.Number x*)
-
-let rec parse = parser
-  | [< u = parse; 'Token.Plus; v = parse2 >] -> Ast.Plus (u, v)
-  | [< u = parse2 >] -> u
-
-and parse2 = parser
-  | [< u = parse2; 'Token.Plus; v = parse3 >] -> Ast.Mul (u, v)
-  | [< u = parse3 >] -> u
-
-and parse3 = parser
   | [< 'Token.Number x >] -> Ast.Number x
+  | [< 'Token.Keyword '('; e = parse_expr; 'Token.Keyword ')' >] -> e
