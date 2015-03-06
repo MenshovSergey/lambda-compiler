@@ -1,6 +1,6 @@
 (* simple token type *)
 type token =
-  | Variable of string
+  | Ident of string
   | Number of int
   | Mul
   | Div

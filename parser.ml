@@ -1,5 +1,6 @@
 (* dummy parser *)
 
+(* expression *)
 let rec parse_expr = parser
   | [< lhs = parse_1;
        rest = parser
@@ -7,6 +8,7 @@ let rec parse_expr = parser
          | [< 'Token.NEq; rhs = parse_expr >] -> Ast.NEq(lhs, rhs)
          | [< >] -> lhs >] -> rest
 
+(* equality args *)
 and parse_1 = parser
   | [< lhs = parse_2;
        rest = parser
@@ -16,6 +18,7 @@ and parse_1 = parser
          | [< 'Token.Ge; rhs = parse_1 >] -> Ast.Ge(lhs, rhs)
          | [< >] -> lhs >] -> rest
 
+(* comparison args *)
 and parse_2 = parser
   | [< lhs = parse_summand;
        rest = parser
@@ -23,6 +26,7 @@ and parse_2 = parser
          | [< 'Token.Minus; rhs = parse_2 >] -> Ast.Minus(lhs, rhs)
          | [< >] -> lhs >] -> rest
 
+(* addition args *)
 and parse_summand = parser
   | [< lhs = parse_multiplier;
        rest = parser
@@ -31,7 +35,8 @@ and parse_summand = parser
          | [< 'Token.Mod; rhs = parse_summand >] -> Ast.Mod(lhs, rhs)
          | [< >] -> lhs >] -> rest
 
+(* multiplication args *)
 and parse_multiplier = parser
   | [< 'Token.Number x >] -> Ast.Number x
-  | [< 'Token.Variable v >] -> Ast.Variable v
+  | [< 'Token.Ident v >] -> Ast.Variable v
   | [< 'Token.Keyword '('; e = parse_expr; 'Token.Keyword ')' >] -> e

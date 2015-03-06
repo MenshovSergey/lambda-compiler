@@ -1,15 +1,22 @@
 (* dummy lexer *)
-(*let lex = Token.BinOp ('*', Token.Number 12, Token.BinOp ('+', Token.Number 1, Token.Variable "x"))*)
 
 let rec lex = parser
   (* skip whitespaces *)
-  | [< ' (' ' | '\n' | '\r' | '\t'); stream >] -> lex stream
-  (* parse number *)
+  | [< ' (' ' | '\n' | '\r' | '\t'); stream = lex >] -> stream
+
+  (* number *)
   | [< ' ('0' .. '9' as c); stream >] ->
-    let buffer = Buffer.create 1
-    in
+    let buffer = Buffer.create 1 in
     Buffer.add_char buffer c;
     lex_number buffer stream
+
+  (* ident *)
+  | [< ' ('a' .. 'z' | 'A' .. 'Z' as c); stream >] ->
+    let buffer = Buffer.create 1 in
+    Buffer.add_char buffer c;
+    lex_ident buffer stream
+
+  (* ariphmetic binary ops *)
   | [< ''*'; stream >] ->
     [< 'Token.Mul; lex stream >]
   | [< ''/'; stream >] ->
@@ -20,25 +27,42 @@ let rec lex = parser
     [< 'Token.Plus; lex stream >]
   | [< ''-'; stream >] ->
     [< 'Token.Minus; lex stream >]
-  | [< ''<'; stream >] ->
-    [< 'Token.Lt; lex stream >]
-  | [< ''<'; ''='; stream >] ->
-    [< 'Token.Le; lex stream >]
-  | [< ''>'; stream >] ->
-    [< 'Token.Gt; lex stream >]
-  | [< ''>'; ''='; stream >] ->
-    [< 'Token.Ge; lex stream >]
+
+  (* comparison ops *)
+  | [< ''<';
+       rest = parser
+         | [< ''='; stream = lex >] -> [< 'Token.Le; stream >]
+         | [< stream = lex >] -> [< 'Token.Lt; stream >] >] -> rest
+  | [< ''>';
+       rest = parser
+         | [< ''='; stream = lex >] -> [< 'Token.Ge; stream >]
+         | [< stream = lex >] -> [< 'Token.Gt; stream >] >] -> rest
+
+  (* equality / inequality ops *)
   | [< ''='; ''='; stream >] ->
     [< 'Token.Eq; lex stream >]
   | [< ''!'; ''='; stream >] ->
     [< 'Token.NEq; lex stream >]
-  | [< 'c; stream >] ->
-    [< 'Token.Keyword c; lex stream >]
+
+  (* other chars *)
+  | [< 'c; stream = lex >] ->
+    [< 'Token.Keyword c; stream >]
+
+  (* empty *)
   | [< >] -> [< >]
 
+(* number lexer with buffer *)
 and lex_number buffer = parser
   | [< ' ('0' .. '9' as c); stream >] ->
     Buffer.add_char buffer c;
     lex_number buffer stream
-  | [< stream=lex >] ->
+  | [< stream = lex >] ->
     [< 'Token.Number (int_of_string (Buffer.contents buffer)); stream >]
+
+(* ident lexer with buffer *)
+and lex_ident buffer = parser
+  | [< ' ('a' .. 'z' | 'A' .. 'Z' | '0' .. '9' as c); stream >] ->
+    Buffer.add_char buffer c;
+    lex_ident buffer stream
+  | [< stream = lex >] ->
+    [< 'Token.Ident (Buffer.contents buffer); stream >]
