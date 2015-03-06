@@ -12,11 +12,11 @@ It supports ariphmetic and comparison operators, numbers and variables.
 
 ## Run
 
-    ./main.byte
+    ./main.byte < test-expr.txt
 
 ## Todo
 
-- [ ] Read string from stdin (currently hardcoded)
+- [x] Read string from stdin (currently hardcoded)
 - [ ] Implement power
 - [ ] Merge logical operations
 - [ ] Implement variable assignment
