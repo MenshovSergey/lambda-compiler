@@ -12,8 +12,12 @@ and parse_multiplier = parser
   | [< 'Token.Number x >] -> Ast.Number x*)
 
 let rec parse = parser
-  | [< 'Token.Number x; other = parse_a (Ast.Number x) >] -> other
+  | [< u = parse; 'Token.Plus; v = parse2 >] -> Ast.Plus (u, v)
+  | [< u = parse2 >] -> u
 
-and parse_a lhs = parser
-  | [< 'Token.Plus; rhs >] -> Ast.Plus (lhs, (parse rhs))
+and parse2 = parser
+  | [< u = parse2; 'Token.Plus; v = parse3 >] -> Ast.Mul (u, v)
+  | [< u = parse3 >] -> u
+
+and parse3 = parser
   | [< 'Token.Number x >] -> Ast.Number x
