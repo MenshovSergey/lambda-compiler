@@ -4,7 +4,7 @@ let main () =
     let input      = "1 + 2 + 3" in
     let lex_stream = Lexer.lex (Stream.of_string input) in
     let ast        = Parser.parse lex_stream in
-    Pretty.print_ast ast
+    Ast.pretty_print ast
   in
   print_string (output ^ "\n")
 ;;
