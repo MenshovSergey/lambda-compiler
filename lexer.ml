@@ -17,16 +17,18 @@ let rec lex = parser
     lex_ident buffer stream
 
   (* ariphmetic binary ops *)
-  | [< ''*'; stream >] ->
-    [< 'Token.Mul; lex stream >]
-  | [< ''/'; stream >] ->
-    [< 'Token.Div; lex stream >]
-  | [< ''%'; stream >] ->
-    [< 'Token.Mod; lex stream >]
-  | [< ''+'; stream >] ->
-    [< 'Token.Plus; lex stream >]
-  | [< ''-'; stream >] ->
-    [< 'Token.Minus; lex stream >]
+  | [< ''^'; stream = lex >] ->
+    [< 'Token.Pow; stream >]
+  | [< ''*'; stream = lex >] ->
+    [< 'Token.Mul; stream >]
+  | [< ''/'; stream = lex >] ->
+    [< 'Token.Div; stream >]
+  | [< ''%'; stream = lex >] ->
+    [< 'Token.Mod; stream >]
+  | [< ''+'; stream = lex >] ->
+    [< 'Token.Plus; stream >]
+  | [< ''-'; stream = lex >] ->
+    [< 'Token.Minus; stream >]
 
   (* comparison ops *)
   | [< ''<';
@@ -39,10 +41,10 @@ let rec lex = parser
          | [< stream = lex >] -> [< 'Token.Gt; stream >] >] -> rest
 
   (* equality / inequality ops *)
-  | [< ''='; ''='; stream >] ->
-    [< 'Token.Eq; lex stream >]
-  | [< ''!'; ''='; stream >] ->
-    [< 'Token.NEq; lex stream >]
+  | [< ''='; ''='; stream = lex >] ->
+    [< 'Token.Eq; stream >]
+  | [< ''!'; ''='; stream = lex >] ->
+    [< 'Token.NEq; stream >]
 
   (* other chars *)
   | [< 'c; stream = lex >] ->

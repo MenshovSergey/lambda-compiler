@@ -37,6 +37,13 @@ and parse_summand = parser
 
 (* multiplication args *)
 and parse_multiplier = parser
+  | [< lhs = parse_power;
+       rest = parser
+         | [< 'Token.Pow; rhs = parse_multiplier >] -> Ast.Pow(lhs, rhs)
+         | [< >] -> lhs >] -> rest
+
+(* power args *)
+and parse_power = parser
   | [< 'Token.Number x >] -> Ast.Number x
   | [< 'Token.Ident v >] -> Ast.Variable v
   | [< 'Token.Keyword '('; e = parse_expr; 'Token.Keyword ')' >] -> e

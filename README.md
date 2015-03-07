@@ -17,7 +17,7 @@ It supports ariphmetic and comparison operators, numbers and variables.
 ## Todo
 
 - [x] Read string from stdin (currently hardcoded)
-- [ ] Implement power
+- [x] Implement power
 - [ ] Merge logical operations
 - [ ] Implement variable assignment
 - [ ] Implement multiple statements (``;`` operator)

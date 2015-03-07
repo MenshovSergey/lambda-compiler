@@ -2,6 +2,7 @@
 type token =
   | Ident of string
   | Number of int
+  | Pow
   | Mul
   | Div
   | Mod

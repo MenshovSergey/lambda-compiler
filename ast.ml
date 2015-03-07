@@ -1,6 +1,7 @@
 type expr =
   | Variable of string
   | Number of int
+  | Pow of expr * expr
   | Mul of expr * expr
   | Div of expr * expr
   | Mod of expr * expr
@@ -16,6 +17,7 @@ type expr =
 let rec pretty_print = function
   | Variable v -> v
   | Number x -> string_of_int x
+  | Pow (x, y) -> "(^ " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
   | Mul (x, y) -> "(* " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
   | Div (x, y) -> "(/ " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
   | Mod (x, y) -> "(% " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
