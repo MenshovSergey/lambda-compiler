@@ -11,12 +11,14 @@ type foundType =
     | Assign 
     | None
     | Error of string
+    
 let rec pretty_print = function
     | Math -> "Math"
     | Logic -> "Logic"
     | Assign -> "Assign"
     | None -> "None"
     | Error (v) -> v
+
 let getType tree = 
     let rec checkType left right expectType foundType typeArgument = 
         if (foundType == expectType) 
