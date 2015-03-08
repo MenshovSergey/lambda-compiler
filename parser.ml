@@ -2,12 +2,17 @@
 
 (* expression *)
 let rec parse_expr = parser
-  | [< lhs = parse_1;
+  | [< lhs = parse_0;
        rest = parser
-         | [< 'Token.Eq; rhs = parse_expr >] -> Ast.Eq(lhs, rhs)
-         | [< 'Token.NEq; rhs = parse_expr >] -> Ast.NEq(lhs, rhs)
+         | [< '_; rhs = parse_0 >] -> Ast.Assign(lhs, rhs)         
          | [< >] -> lhs >] -> rest
 
+and parse_0 = parser 
+  | [< lhs = parse_1;
+       rest = parser
+         | [< 'Token.Eq; rhs = parse_0 >] -> Ast.Eq(lhs, rhs)
+         | [< 'Token.NEq; rhs = parse_0 >] -> Ast.NEq(lhs, rhs)
+         | [< >] -> lhs >] -> rest
 (* equality args *)
 and parse_1 = parser
   | [< lhs = parse_2;
@@ -24,6 +29,7 @@ and parse_2 = parser
        rest = parser
          | [< 'Token.Plus; rhs = parse_2 >] -> Ast.Plus(lhs, rhs)
          | [< 'Token.Minus; rhs = parse_2 >] -> Ast.Minus(lhs, rhs)
+         | [< 'Token.Or; rhs = parse_2 >] -> Ast.Or (lhs, rhs)
          | [< >] -> lhs >] -> rest
 
 (* addition args *)
@@ -33,17 +39,19 @@ and parse_summand = parser
          | [< 'Token.Mul; rhs = parse_summand >] -> Ast.Mul(lhs, rhs)
          | [< 'Token.Div; rhs = parse_summand >] -> Ast.Div(lhs, rhs)
          | [< 'Token.Mod; rhs = parse_summand >] -> Ast.Mod(lhs, rhs)
+         | [< 'Token.And; rhs = parse_summand >] -> Ast.And(lhs, rhs)
          | [< >] -> lhs >] -> rest
 
 (* multiplication args *)
 and parse_multiplier = parser
   | [< lhs = parse_power;
        rest = parser
-         | [< 'Token.Pow; rhs = parse_multiplier >] -> Ast.Pow(lhs, rhs)
+         | [< 'Token.Pow; rhs = parse_multiplier >] -> Ast.Pow(lhs, rhs)         
          | [< >] -> lhs >] -> rest
 
 (* power args *)
 and parse_power = parser
-  | [< 'Token.Number x >] -> Ast.Number x
-  | [< 'Token.Ident v >] -> Ast.Variable v
-  | [< 'Token.Keyword '('; e = parse_expr; 'Token.Keyword ')' >] -> e
+      | [< 'Token.Number x >] -> Ast.Number x
+      | [< 'Token.Ident v >] -> Ast.Variable v
+      | [< 'Token.Keyword '('; e = parse_0; 'Token.Keyword ')' >] -> e
+      | [< 'Token.Not; rhs = parse_power >] -> Ast.Not(rhs)

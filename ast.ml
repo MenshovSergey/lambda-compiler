@@ -2,6 +2,7 @@ type expr =
   | Variable of string
   | Number of int
   | Mul of expr * expr
+  | Pow of expr * expr
   | Div of expr * expr
   | Mod of expr * expr
   | Plus of expr * expr
@@ -13,6 +14,9 @@ type expr =
   | Eq of expr * expr
   | NEq of expr * expr
   | Assign of expr * expr
+  | Not of expr
+  | And of expr * expr
+  | Or of expr * expr
 
 
 
@@ -34,6 +38,10 @@ let rec pretty_print = function
   | Eq (x, y) -> "(== " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
   | NEq (x, y) -> "(!= " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
   | Assign (x, y) -> ((pretty_print x) ^ ":=" ^ pretty_print y)
+  | Pow (x, y) -> "(^ " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
+  | And (x, y) -> "(& " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
+  | Or (x, y) -> "(| " ^ (pretty_print x) ^ " " ^ (pretty_print y) ^ ")"
+  | Not (x) -> "(!" ^ (pretty_print x) ^ ")"
 
 let rec numeral x = 
   match x  with 

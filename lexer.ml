@@ -15,7 +15,20 @@ let rec lex = parser
     let buffer = Buffer.create 1 in
     Buffer.add_char buffer c;
     lex_ident buffer stream
+  (* x : y *)
+  | [< '':'; stream = lex >] ->
+    [< 'Token.Assign; stream >]
 
+  (* logical bianry ops *)
+  | [< ''&'; stream = lex >] ->
+    [< 'Token.And; stream >]
+  | [< ''|'; stream = lex >] ->
+    [< 'Token.Or; stream >]
+
+  (* logical not op*)
+  | [< ''?'; stream = lex >] ->
+    [< 'Token.Not; stream >]  
+    
   (* ariphmetic binary ops *)
   | [< ''^'; stream = lex >] ->
     [< 'Token.Pow; stream >]

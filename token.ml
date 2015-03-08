@@ -2,6 +2,7 @@
 type token =
   | Ident of string
   | Number of int
+  | Assign
   | Pow
   | Mul
   | Div
@@ -15,3 +16,7 @@ type token =
   | Eq
   | NEq
   | Keyword of char
+  | And
+  | Or
+  | Not
+  
